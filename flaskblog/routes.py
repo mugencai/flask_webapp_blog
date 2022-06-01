@@ -2,8 +2,8 @@ import os
 import secrets
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskblog import app, db, bcrypt
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from flaskblog.model import User, Post, Category
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, TagForm
+from flaskblog.model import User, Post, Tag
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -12,12 +12,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 def home():
     page = request.args.get('page', 1, type=int)
     posts = Post.query.paginate(page=page, per_page=3)
-    return render_template('home.html', posts=posts)
-
-
-@app.route("/tags")
-def tags():
-    return render_template('tags.html', title='Tags')
+    tags = Tag.query.all()
+    return render_template('home.html', posts=posts, tags=tags)
 
 
 @app.route("/categories")
@@ -102,7 +98,9 @@ def account():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user, category_id=form.category.data)
+        post = Post(title=form.title.data, content=form.content.data, author=current_user, tags=form.tags.data)
+        for tag in form.tags.data:
+            post.tags.append(tag)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
@@ -149,8 +147,24 @@ def delete_post(post_id):
     return redirect(url_for('home'))
 
 
+@app.route("/user/<string:username>")
+def user_posts(username):
+    page = request.args.get('page', 1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = Post.query.filter_by(author=user).paginate(page=page, per_page=3)
+    return render_template('user_posts.html', posts=posts, user=user)
 
 
-
-
+@app.route("/tag/add", methods=['GET', 'POST'])
+@login_required
+def add_tag():
+    form = TagForm()
+    if form.validate_on_submit():
+        tag = Tag(name=form.tag.data)
+        db.session.add(tag)
+        db.session.commit()
+        flash('Your tag has been added!', 'success')
+        return redirect(url_for('home'))
+    return render_template('add_tag.html', title='Add tag',
+                           form=form, legend='Add tag')
 

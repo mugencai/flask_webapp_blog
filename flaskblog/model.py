@@ -20,23 +20,35 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
 
+# Registration Post with Tag
+Post_Tag = db.Table('Post_Tag',
+                    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+                    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')))
+
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    tags = db.relationship('Tag', secondary=Post_Tag,
+                             backref=db.backref('posts', lazy='dynamic'),
+                             lazy='dynamic',
+                           )
 
     def __repr__(self):
-        return f"Post('{self.title}', '{self.date_posted}')"
+        return f"Post('{self.title}', '{self.tags.all()}', '{self.date_posted}')"
 
 
-class Category(db.Model):
+class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    posts = db.relationship('Post', backref='category', lazy=True)
+    name = db.Column(db.String(30), nullable=False)
+
+    def __init__(self, name):
+        self.name = name
 
     def __repr__(self):
-        return f"Category('{self.name}')"
+        return '#' + eval('%r' % self.name)
+
 

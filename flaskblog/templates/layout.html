@@ -24,18 +24,22 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
-            <div class="navbar-nav me-auto">
+{#            <div class="navbar-nav me-auto">#}
 {#              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>#}
 {#              <a class="nav-item nav-link" href="{{ url_for('tags') }}">Tags</a>#}
-{#              <a class="nav-item nav-link" href="{{ url_for('categories') }}">Categories</a>#}
+{#              <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>#}
 {#              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>#}
-            </div>
+{#            </div>#}
             <!-- Navbar Right Side -->
             <div class="navbar-nav ms-auto">
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('new_post') }}">New Post</a>
+                <a class="nav-item nav-link" href="{{ url_for('add_tag') }}">Add tag</a>
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+              {% else %}
+                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
               {% endif %}
             </div>
           </div>
@@ -57,17 +61,29 @@
             {% endwith %}
             {% block content %}{% endblock %}
         </div>
+
         <div class="col-md-4">
           <div class="content-section">
             <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/default.jpg')}}">
             <h3><b>mugencai</b></h3>
-            <p>文系大学院生です。Webエンジニアになりたいです。</p>
+            <p>Webエンジニアになりたいです。</p>
 
             <a class="nav-item nav-link" href="https://github.com/mugencai" >-Github</a>
             <a class="nav-item nav-link" href="https://twitter.com/mugencai" >-Twitter</a>
             <a class="nav-item nav-link" href="https://atcoder.jp/users/mugencai" >-Atcoder</a>
             </p>
           </div>
+          <div class="content-section">
+            <p>Tags</p>
+            <p class='text-muted'>
+              <ul class="list-group">
+                {% for tag in tags %}
+                <li class="list-group-item list-group-item-light">{{ tag.name }}</li>
+                {% endfor %}
+              </ul>
+            </p>
+          </div>
+        </div>
 {#          <div class="content-section">#}
 {#            <p>Categories</p>#}
 {#            <p class='text-muted'>#}
@@ -82,6 +98,10 @@
 {#        </div>#}
       </div>
     </main>
+
+
+
+
 
     <!-- Optional JavaScript; choose one of the two! -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
