@@ -19,19 +19,6 @@
                     {% endif %}
                 </div>
 
-                <div class="form-group">
-                    {{ form.content.label(class="form-control-label") }}
-                    {% if form.content.errors %}
-                        {{ form.content(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.content.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.content(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
 
                 <div class="form-group">
                     {{ form.tags.label(class="form-control-label") }}
@@ -44,15 +31,92 @@
 {#                    {% endfor %}#}
                 </div>
 
+                <div class="form-group">
+                    {{ form.description.label(class="form-control-label") }}
+                    {% if form.description.errors %}
+                        {{ form.description(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.description.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.description(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+                {{ form.content.label(class="form-control-label") }}
+                <link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+                <div class="am-form-group am-form-group-lg am-form-group-sm am-form-group-md">
+                <div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+                    {% if form.content.errors %}
+                    {% for e in form.content.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    <div id="editormd">
+                        {{ form.content(style="display:none;" ,class_="am-radius") }}
+                    </div>
+                </div>
+
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
         </form>
     </div>
+
+
+    <script src="{{ url_for('static',filename='editormd/examples/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='editormd/editormd.min.js') }}"></script>
+    <script type="text/javascript">
+        var editor
+
+        $(function () {
+            editor = editormd("editormd", {
+                {#width: "90%", //此处width不要设置，否则会显示不出#}
+                height: 440,
+                syncScrolling: "single",
+                path: "{{ url_for('static',filename='editormd/lib/') }}",
+                {#saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea#}
+                theme : "light",
+                previewTheme : "light",    //背景颜色还可以使用light
+                editorTheme : "pastel-on-light",
+                //markdown : md,
+                codeFold : true,
+                //syncScrolling : false,
+                saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
+                searchReplace : true,
+                //watch : false,                // 关闭实时预览
+                htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启
+                //toolbar  : false,             //关闭工具栏
+                //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+                emoji : true,
+                taskList : true,
+                tocm            : true,         // Using [TOCM]
+                {#tex : true,                   // 开启科学公式TeX语言支持，默认关闭#}
+                {#flowChart : true,             // 开启流程图支持，默认关闭#}
+                {#sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,#}
+                {#dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true#}
+                {#dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true#}
+                {#dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true#}
+                {#dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1#}
+                {#dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff#}
+            });
+        });
+    </script>
+
+
+
+
+
     <div class="border-top pt-3">
         <small class="text-muted">
             Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
         </small>
     </div>
+
+
+
+
 {% endblock content %}

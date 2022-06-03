@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, HiddenField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from wtforms_sqlalchemy.fields import QuerySelectMultipleField
 from flaskblog.model import User, Tag
@@ -59,7 +59,9 @@ class UpdateAccountForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
+    # content_html = HiddenField()
     tags = QuerySelectMultipleField("Tags", validators=[DataRequired()],
                                     query_factory=lambda: Tag.query.all())
     tag_ = Tag

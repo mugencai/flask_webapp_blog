@@ -76,6 +76,7 @@ def save_picture(form_picture):
 @login_required
 def account():
     form = UpdateAccountForm()
+    tags = Tag.query.all()
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
@@ -90,15 +91,18 @@ def account():
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account',
-                           image_file=image_file, form=form)
+                           image_file=image_file, form=form, tags=tags)
 
 
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
+    tags = Tag.query.all()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user, tags=form.tags.data)
+        post = Post(title=form.title.data, content=form.content.data, author=current_user,
+                    tags=form.tags.data,
+                    description=form.description.data)
         for tag in form.tags.data:
             post.tags.append(tag)
         db.session.add(post)
@@ -106,19 +110,21 @@ def new_post():
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post',
-                           form=form, legend='New Post')
+                           form=form, legend='New Post', tags=tags)
 
 
 @app.route("/post/<int:post_id>")
 def post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('post.html', title=post.title, post=post)
+    tags = Tag.query.all()
+    return render_template('post.html', title=post.title, post=post, tags=tags)
 
 
 @app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
 @login_required
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
+    tags = Tag.query.all()
     if post.author != current_user:
         abort(403)
     form = PostForm()
@@ -132,7 +138,7 @@ def update_post(post_id):
         form.title.data = post.title
         form.content.data = post.content
     return render_template('create_post.html', title='Update Post',
-                           form=form, legend='Update Post')
+                           form=form, legend='Update Post', tags=tags)
 
 
 @app.route("/post/<int:post_id>/delete", methods=['POST'])
@@ -159,6 +165,7 @@ def user_posts(username):
 @login_required
 def add_tag():
     form = TagForm()
+    tags = Tag.query.all()
     if form.validate_on_submit():
         tag = Tag(name=form.tag.data)
         db.session.add(tag)
@@ -166,5 +173,4 @@ def add_tag():
         flash('Your tag has been added!', 'success')
         return redirect(url_for('home'))
     return render_template('add_tag.html', title='Add tag',
-                           form=form, legend='Add tag')
-
+                           form=form, legend='Add tag', tags=tags)
