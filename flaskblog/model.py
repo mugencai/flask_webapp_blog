@@ -32,7 +32,6 @@ class Post(db.Model):
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     description = db.Column(db.Text, nullable=False)
     content = db.Column(db.Text, nullable=False)
-    # content_html = db.Column(db.Text, nullable=False)  #content转化为html代码后的格式
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     tags = db.relationship('Tag', secondary=Post_Tag,
                              backref=db.backref('posts', lazy='dynamic'),
