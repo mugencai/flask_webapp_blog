@@ -157,8 +157,16 @@ def delete_post(post_id):
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
     user = User.query.filter_by(username=username).first_or_404()
-    posts = Post.query.filter_by(author=user).paginate(page=page, per_page=3)
+    posts = Post.query.filter_by(author=user).paginate(page=page, per_page=5)
     return render_template('user_posts.html', posts=posts, user=user)
+
+
+@app.route("/tag/<string:tag_name>")
+def tag_posts(tag_name):
+    page = request.args.get('page', 1, type=int)
+    tag_name = tag_name
+    posts = Post.query.paginate(page=page, per_page=5)
+    return render_template('tag_posts.html', posts=posts, tag_name=tag_name)
 
 
 @app.route("/tag/add", methods=['GET', 'POST'])

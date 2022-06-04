@@ -6,11 +6,9 @@
           <div class="media-body">
             <div class="article-metadata">
 {#              <a class="text-muted" href="{{ url_for("user_posts", username=post.author.username) }}">User: {{ post.author.username }}</a>#}
-              <a class="text-muted" href="#">
-                  {% for tag in post.tags.all() %}
-                      {{ tag }}
-                  {% endfor %}
-              </a>
+              {% for tag in post.tags.all() %}
+                  <a class="text-muted" href="{{ url_for("tag_posts", tag_name=tag) }}">{{ tag }}</a>
+              {% endfor %}
 {#              <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>#}
             </div>
             <style>
